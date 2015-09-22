@@ -31,5 +31,4 @@ galaxy_info:
     - web
 
 dependencies:
-  #- infOpen.openjdk-jre
-  - ansible-role-openjdk-jre
+  - achaussier.openjdk-jre

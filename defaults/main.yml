@@ -11,6 +11,8 @@ elasticsearch_package_state   : present
 elasticsearch_service_state   : started
 elasticsearch_service_enabled : True
 
+# Elacticsearch default version
+elasticsearch_version : 1.6
 
 ################################### Cluster ###################################
 elasticsearch_cluster_name : 'elasticsearch'
@@ -33,6 +35,7 @@ elasticsearch_path_conf     : /etc/elasticsearch
 elasticsearch_path_work     : /tmp/elasticsearch
 elasticsearch_path_logs     : /var/log/elasticsearch
 elasticsearch_path_plugins  : /usr/share/elasticsearch/plugins
+elasticsearch_path_pid      : /var/run/elasticsearch
 elasticsearch_path_data     :
   - /var/lib/elasticsearch
 

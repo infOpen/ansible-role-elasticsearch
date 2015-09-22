@@ -1,4 +1,6 @@
 # INFOPEN - File managed by Ansible
+es.logger.level: INFO
+rootLogger: INFO, console, file
 
 logger:
   action                 : DEBUG

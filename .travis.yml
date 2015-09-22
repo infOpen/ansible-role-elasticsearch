@@ -16,6 +16,9 @@ install:
   # Add ansible.cfg to pick up roles path.
   - "cp ./tests/ansible.cfg ./"
 
+  # Get dependencies.
+  - "ansible-galaxy install achaussier.openjdk-jre"
+
 script:
   # Check the role/playbook's syntax.
   - ansible-playbook -i tests/inventory tests/test.yml --syntax-check
@@ -32,4 +35,5 @@ script:
     || (echo 'Idempotence test: fail' && exit 1)
 
   # Check elasticsearch service is running
-  - "sudo service elasticsearch status"
+  - "sudo curl -XGET 'http://127.0.0.1:9200/_search?pretty=1'"
+  - "sudo curl -XGET 'http://127.0.0.1:9200/_cluster/health?pretty=true'"
