@@ -1,0 +1,78 @@
+---
+
+- name: stat datadir exists
+  stat:
+    path : "{{ elasticsearch_path_data[0] }}"
+  register: elasticsearch_datadir_stat
+
+- name : stop elasticsearch if datadir move is needed
+  service :
+    name  : elasticsearch
+    state : stopped
+  when : not elasticsearch_datadir_stat.stat.exists
+
+#- name : get current datadir configuration
+#  command       : "grep -E '[^#]?path.data' /etc/elasticsearch/elasticsearch.yml"
+#  ignore_errors : yes
+#  register      : elasticsearch_current_datadir
+#  when : not elasticsearch_datadir_stat.stat.exists
+
+- name : create final datadir
+  file :
+    path  : "{{ elasticsearch_path_data[0] }}"
+    state : directory
+    owner : elasticsearch
+    group : elasticsearch
+    mode  : 0750
+  register : elasticsearch_current_datadir
+  when : not elasticsearch_datadir_stat.stat.exists
+
+#- name : move elasticsearch data to data disk
+#  command : "mv {{ elasticsearch_current_datadir.stdout.split(':')[1] | trim }} {{ elasticsearch_path_data[0] }}"
+#  when : not elasticsearch_datadir_stat.stat.exists
+
+- name : generate custom role config file
+  template :
+    src   : "{{ item }}"
+    dest  : /etc/elasticsearch/elasticsearch.yml
+    group : root
+    owner : root
+    mode  : 0644
+  with_first_found :
+      - "{{ inventory_dir }}/templates/elastic-search/{{ elasticsearch_main_file }}_{{ elasticsearch_version }}"
+      - "{{ role_path }}/templates/elasticsearch_{{ elasticsearch_version }}.yml.j2"
+  notify :
+    - restart elasticsearch
+
+- name : copy logging config file
+  copy :
+    src   : "{{ item }}"
+    dest  : /etc/elasticsearch/logging.yml
+    group : root
+    owner : root
+    mode  : 0644
+  with_first_found :
+      - "{{ inventory_dir }}/files/elastic-search/{{ elasticsearch_logging_file }}_{{ elasticsearch_version }}"
+      - "{{ role_path }}/files/logging_{{ elasticsearch_version }}.yml"
+  notify :
+    - restart elasticsearch
+
+- name : copy logrotate configuration
+  template :
+    src   : "{{ item }}"
+    dest  : /etc/logrotate.d/elastic-search
+    group : root
+    owner : root
+    mode  : 0644
+  with_first_found :
+      - "{{ inventory_dir }}/templates/elastic-search/{{ elasticsearch_logrotate_file }}_{{ elasticsearch_version }}"
+      - "{{ role_path }}/templates/logrotate_{{ elasticsearch_version }}.j2"
+      - "{{ role_path }}/templates/logrotate.j2"
+  notify :
+    - restart elasticsearch
+
+- name : enable elasticsearch service on boot
+  service :
+    name    : "{{ elasticsearch_service_name }}"
+    enabled : "{{ elasticsearch_service_enabled }}"
+    state   : "{{ elasticsearch_service_state }}"

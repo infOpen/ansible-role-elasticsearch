@@ -1,0 +1,8 @@
+---
+
+# Debian specific vars
+
+elasticsearch_packages :
+  - elasticsearch
+
+elasticsearch_service_name: elasticsearch

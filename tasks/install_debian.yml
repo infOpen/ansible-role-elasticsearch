@@ -1,0 +1,23 @@
+---
+
+- name    : install elasticsearch key
+  apt_key :
+    url     : https://packages.elastic.co/GPG-KEY-elasticsearch
+    state   : present
+
+- name : add elasticsearch repository
+  template :
+    dest  : /etc/apt/sources.list.d/elasticsearch.list
+    src   : "{{ role_path }}/templates/elasticsearch.list.j2"
+    group : root
+    owner : root
+    mode  : 0644
+
+- name : install elasticsearch
+  apt  :
+    name  : "{{ item }}"
+    state : "{{ elasticsearch_package_state }}"
+    update_cache: True
+  with_items : "{{ elasticsearch_packages }}"
+  notify :
+    - restart elasticsearch

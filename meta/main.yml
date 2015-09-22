@@ -1,0 +1,35 @@
+---
+galaxy_info:
+  author: Alexandre Chaussier
+  description: Install elastic search package on Debian or Ubuntu
+  company: Infopen (http://www.infopen.pro)
+  license: MIT
+  min_ansible_version: 1.5
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - precise
+        - quantal
+        - raring
+        - saucy
+        - trusty
+        - utopic
+        - vivid
+    - name: Debian
+      versions:
+        - all
+        - etch
+        - jessie
+        - lenny
+        - squeeze
+        - wheezy
+
+  categories:
+    - database:nosql
+    - networking
+    - web
+
+dependencies:
+  #- infOpen.openjdk-jre
+  - ansible-role-openjdk-jre
