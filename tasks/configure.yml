@@ -5,7 +5,8 @@
     path : "{{ elasticsearch_path_data[0] }}"
   register: elasticsearch_datadir_stat
 
-- debug : "msg={{ elasticsearch_datadir_stat }}"
+- debug :
+    var : elasticsearch_datadir_stat
 
 - name : stop elasticsearch if datadir move is needed
   service :
