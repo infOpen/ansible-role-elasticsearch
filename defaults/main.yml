@@ -35,6 +35,7 @@ elasticsearch_path_conf     : /etc/elasticsearch
 elasticsearch_path_work     : /tmp/elasticsearch
 elasticsearch_path_logs     : /var/log/elasticsearch
 elasticsearch_path_plugins  : /usr/share/elasticsearch/plugins
+elasticsearch_path_pid      : /var/run/elasticsearch
 elasticsearch_path_data     :
   - /var/lib/elasticsearch
 
