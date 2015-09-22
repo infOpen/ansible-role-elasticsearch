@@ -5,14 +5,13 @@
     path : "{{ elasticsearch_path_data[0] }}"
   register: elasticsearch_datadir_stat
 
-- debug :
-    var : elasticsearch_datadir_stat
-
 - name : stop elasticsearch if datadir move is needed
   service :
     name  : "{{ elasticsearch_service_name }}"
     state : stopped
   when : not elasticsearch_datadir_stat.stat.exists
+  notify :
+    - restart elasticsearch
 
 #- name : get current datadir configuration
 #  command       : "grep -E '[^#]?path.data' /etc/elasticsearch/elasticsearch.yml"
@@ -28,7 +27,9 @@
     group : elasticsearch
     mode  : 0750
   register : elasticsearch_current_datadir
-  when : not elasticsearch_datadir_stat.stat.exists
+  when     : not elasticsearch_datadir_stat.stat.exists
+  notify :
+    - restart elasticsearch
 
 #- name : move elasticsearch data to data disk
 #  command : "mv {{ elasticsearch_current_datadir.stdout.split(':')[1] | trim }} {{ elasticsearch_path_data[0] }}"
