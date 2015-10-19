@@ -1,6 +1,6 @@
 ---
 
-# Tests for ntp role
+# Tests for elasticsearch role
 
 - hosts: localhost
   remote_user: root
