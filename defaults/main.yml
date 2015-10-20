@@ -14,6 +14,11 @@ elasticsearch_service_enabled : True
 # Elacticsearch default version
 elasticsearch_version : 1.6
 
+# Elasticsearch config files name
+elasticsearch_main_file      : 'elasticsearch.yml'
+elasticsearch_logging_file   : 'logging.yml'
+elasticsearch_logrotate_file : 'logrotate.j2'
+
 ################################### Cluster ###################################
 elasticsearch_cluster_name : 'elasticsearch'
 
