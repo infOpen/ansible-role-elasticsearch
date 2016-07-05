@@ -2,7 +2,7 @@
 
 # Tests for elasticsearch role
 
-- hosts: localhost
-  remote_user: root
+- hosts: 'localhost'
+  remote_user: 'root'
   roles:
-    - ansible-role-elasticsearch
+    - 'ansible-role-elasticsearch'
