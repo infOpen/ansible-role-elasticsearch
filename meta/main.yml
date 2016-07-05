@@ -31,4 +31,4 @@ galaxy_info:
     - 'web'
 
 dependencies:
-  - 'achaussier.openjdk-jre'
+  - 'infOpen.openjdk-jre'
