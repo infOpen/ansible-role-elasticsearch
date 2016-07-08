@@ -1,31 +1,34 @@
 ---
 
-- name    : install elasticsearch key
-  apt_key :
-    url     : https://packages.elastic.co/GPG-KEY-elasticsearch
-    state   : present
+- name: 'Install elasticsearch key'
+  apt_key:
+    url: 'https://packages.elastic.co/GPG-KEY-elasticsearch'
+    state: 'present'
 
-- name : add elasticsearch repository
-  template :
-    dest  : /etc/apt/sources.list.d/elasticsearch.list
-    src   : "{{ role_path }}/templates/elasticsearch.list.j2"
-    group : root
-    owner : root
-    mode  : 0644
 
-- name : install elasticsearch
-  apt  :
-    name  : "{{ item }}"
-    state : "{{ elasticsearch_package_state }}"
+- name: 'Add elasticsearch repository'
+  template:
+    dest: '/etc/apt/sources.list.d/elasticsearch.list'
+    src: "{{ role_path }}/templates/elasticsearch.list.j2"
+    group: 'root'
+    owner: 'root'
+    mode: '0644'
+
+
+- name: 'Install elasticsearch'
+  apt:
+    name: "{{ item }}"
+    state: "{{ elasticsearch_package_state }}"
     update_cache: True
-  with_items : "{{ elasticsearch_packages }}"
-  notify :
-    - restart elasticsearch
+  with_items: "{{ elasticsearch_packages }}"
+  notify:
+    - 'restart elasticsearch'
 
-- name : create pid dir
-  file :
-    path  : "{{ elasticsearch_path_pid }}"
-    state : directory
-    owner : elasticsearch
-    group : elasticsearch
-    mode  : 0750
+
+- name: 'Create pid dir'
+  file:
+    path: "{{ elasticsearch_path_pid }}"
+    state: 'directory'
+    owner: 'elasticsearch'
+    group: 'elasticsearch'
+    mode: '0750'

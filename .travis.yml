@@ -17,7 +17,7 @@ install:
   - "cp ./tests/ansible.cfg ./"
 
   # Get dependencies.
-  - "ansible-galaxy install achaussier.openjdk-jre"
+  - "ansible-galaxy install infOpen.openjdk-jre"
 
 script:
   # Check the role/playbook's syntax.

@@ -2,8 +2,8 @@
 
 # Handlers file for elasticsearch
 
-- name: restart elasticsearch
+- name: 'restart elasticsearch'
   service:
-    name  : "{{ elasticsearch_service_name }}"
-    state : restarted
-  when : elasticsearch_service_state != "stopped"
+    name: "{{ elasticsearch_service_name }}"
+    state: 'restarted'
+  when: "{{ elasticsearch_service_state != 'stopped' }}"

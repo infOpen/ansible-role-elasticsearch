@@ -131,7 +131,7 @@ Specific OS family vars :
 Dependencies
 ------------
 
-- achaussier.openjdk-jre
+- infOpen.openjdk-jre
 
 Example Playbook
 ----------------
