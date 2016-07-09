@@ -1,0 +1,19 @@
+# Swap files
+*.swo
+*.swp
+
+# Python bytecode
+*.pyc
+
+# Pytest
+.cache
+
+# Vagrant
+.vagrant
+*.retry
+
+# Tox testing
+.tox
+
+# Requirement downloads
+tests/roles
