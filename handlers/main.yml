@@ -3,6 +3,7 @@
 # Handlers file for elasticsearch
 
 - name: 'restart elasticsearch'
+  become: True
   service:
     name: "{{ elasticsearch_service_name }}"
     state: 'restarted'

@@ -1,12 +1,14 @@
 ---
 
 - name: 'Stat datadir exists'
+  become: True
   stat:
     path: "{{ elasticsearch_path_data[0] }}"
   register: 'elasticsearch_datadir_stat'
 
 
 - name: 'Stop elasticsearch if datadir move is needed'
+  become: True
   service:
     name: "{{ elasticsearch_service_name }}"
     state: 'stopped'
@@ -23,6 +25,7 @@
 
 
 - name: 'Create final datadir'
+  become: True
   file:
     path: "{{ elasticsearch_path_data[0] }}"
     state: 'directory'
@@ -41,6 +44,7 @@
 
 
 - name: 'Generate custom role config file'
+  become: True
   template:
     src: "{{ item }}"
     dest: '/etc/elasticsearch/elasticsearch.yml'
@@ -55,6 +59,7 @@
 
 
 - name: 'Copy logging config file'
+  become: True
   copy:
     src: "{{ item }}"
     dest: '/etc/elasticsearch/logging.yml'
@@ -69,6 +74,7 @@
 
 
 - name: 'Copy logrotate configuration'
+  become: True
   template:
     src: "{{ item }}"
     dest: '/etc/logrotate.d/elastic-search'
@@ -84,6 +90,7 @@
 
 
 - name: 'Enable elasticsearch service on boot'
+  become: True
   service:
     name: "{{ elasticsearch_service_name }}"
     enabled: "{{ elasticsearch_service_enabled }}"

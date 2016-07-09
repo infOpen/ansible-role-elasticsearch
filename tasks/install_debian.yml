@@ -1,12 +1,14 @@
 ---
 
 - name: 'Install elasticsearch key'
+  become: True
   apt_key:
     url: 'https://packages.elastic.co/GPG-KEY-elasticsearch'
     state: 'present'
 
 
 - name: 'Add elasticsearch repository'
+  become: True
   template:
     dest: '/etc/apt/sources.list.d/elasticsearch.list'
     src: "{{ role_path }}/templates/elasticsearch.list.j2"
@@ -16,6 +18,7 @@
 
 
 - name: 'Install elasticsearch'
+  become: True
   apt:
     name: "{{ item }}"
     state: "{{ elasticsearch_package_state }}"
@@ -26,6 +29,7 @@
 
 
 - name: 'Create pid dir'
+  become: True
   file:
     path: "{{ elasticsearch_path_pid }}"
     state: 'directory'
