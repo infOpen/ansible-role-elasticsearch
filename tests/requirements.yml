@@ -1,0 +1,4 @@
+---
+
+- role: 'infOpen.openjdk-jre'
+  version: 'v0.3.0'

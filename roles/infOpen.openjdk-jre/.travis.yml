@@ -1,6 +1,6 @@
 ---
 
-# Travis file for elasticsearch role
+# Travis file for openjdk-jre role
 
 dist: trusty
 sudo: required
