@@ -23,6 +23,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vm_config.vm.box = options[:box]
 
 
+      # Virtualbox vm name management
+      vm_config.vm.provider "virtualbox" do |vm|
+          vm.name = name.to_s
+      end
+
+
       # Use trigger plugin to set environment variable used by Ansible
       # Needed with 2.0 home path change
       vm_config.vm.provision 'trigger' do |trigger|
