@@ -11,6 +11,7 @@
 # Vagrant
 .vagrant
 *.retry
+*.log
 
 # Tox testing
 .tox
