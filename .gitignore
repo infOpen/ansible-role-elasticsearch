@@ -17,4 +17,5 @@
 .tox
 
 # Requirement downloads
+roles
 tests/roles
