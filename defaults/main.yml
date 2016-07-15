@@ -4,15 +4,16 @@
 
 # Package variables
 #------------------
-elasticsearch_package_state: 'present'
+elasticsearch_package_state: 'latest'
 
 # Service variables
 #------------------
 elasticsearch_service_state: 'started'
 elasticsearch_service_enabled: True
+elasticsearch_apt_cache_valid_time: 3600
 
 # Elacticsearch default version
-elasticsearch_version: '1.6'
+elasticsearch_version: '2.3'
 
 # Elasticsearch config files name
 elasticsearch_main_file: 'elasticsearch.yml'

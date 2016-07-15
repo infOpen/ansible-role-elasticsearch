@@ -11,18 +11,32 @@
   become: True
   template:
     dest: '/etc/apt/sources.list.d/elasticsearch.list'
-    src: "{{ role_path }}/templates/elasticsearch.list.j2"
+    src: "{{ role_path }}/templates/etc/apt/sources.list.d/elasticsearch.list.j2"
     group: 'root'
     owner: 'root'
     mode: '0644'
+  register: 'elasticseach_repository_updated'
+
+
+- name: 'Update packages list if repository updated'
+  become: True
+  apt:
+    update_cache: True
+  when: "{{ elasticseach_repository_updated | changed }}"
+
+
+- name: 'Update packages list if cache is too old'
+  become: True
+  apt:
+    update_cache: True
+    cache_valid_time: "{{ elasticsearch_apt_cache_valid_time }}"
 
 
 - name: 'Install elasticsearch'
   become: True
-  apt:
+  package:
     name: "{{ item }}"
     state: "{{ elasticsearch_package_state }}"
-    update_cache: True
   with_items: "{{ elasticsearch_packages }}"
   notify:
     - 'restart elasticsearch'
