@@ -20,6 +20,12 @@ elasticsearch_main_file: 'elasticsearch.yml'
 elasticsearch_logging_file: 'logging.yml'
 elasticsearch_logrotate_file: 'logrotate.j2'
 
+# Sysctl virtual memory setting
+elasticsearch_sysctl_rules:
+  - name: 'vm.max_map_count'
+    value: 262144
+    state: 'present'
+
 ################################### Cluster ###################################
 elasticsearch_cluster_name: 'elasticsearch'
 

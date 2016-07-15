@@ -42,6 +42,15 @@
     - 'restart elasticsearch'
 
 
+- name: 'Update virtual memory sysctl setting'
+  become: True
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: "{{ item.state }}"
+  with_items: "{{ elasticsearch_sysctl_rules }}"
+
+
 - name: 'Create pid dir'
   become: True
   file:
