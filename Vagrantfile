@@ -5,9 +5,6 @@
 VAGRANTFILE_API_VERSION = '2'
 
 VMS = {
-  :elasticsearch_trusty => {
-    :box => 'ubuntu/trusty64'
-  },
   :elasticsearch_xenial => {
     :box => 'ubuntu/xenial64'
   }
@@ -26,6 +23,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # Virtualbox vm name management
       vm_config.vm.provider "virtualbox" do |vm|
           vm.name = name.to_s
+          vm.memory = 2048
       end
 
 
