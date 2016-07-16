@@ -20,104 +20,168 @@ elasticsearch_main_file: 'elasticsearch.yml'
 elasticsearch_logging_file: 'logging.yml'
 elasticsearch_logrotate_file: 'logrotate.j2'
 
+# User and group management
+elasticsearch_user_name: 'elasticsearch'
+elasticsearch_group_name: 'elasticsearch'
+
+# Configuration files and folders properties
+elasticsearch_etc_files_owner: "{{ elasticsearch_user_name }}"
+elasticsearch_etc_files_group: "{{ elasticsearch_group_name }}"
+elasticsearch_etc_files_mode: '0400'
+elasticsearch_etc_folders_owner: "{{ elasticsearch_user_name }}"
+elasticsearch_etc_folders_group: "{{ elasticsearch_group_name }}"
+elasticsearch_etc_folders_mode: '0500'
+
+# Data and logs folders properties
+elasticsearch_data_folders_owner: "{{ elasticsearch_user_name }}"
+elasticsearch_data_folders_group: "{{ elasticsearch_group_name }}"
+elasticsearch_data_folders_mode: '0700'
+elasticsearch_log_folders_owner: "{{ elasticsearch_user_name }}"
+elasticsearch_log_folders_group: "{{ elasticsearch_group_name }}"
+elasticsearch_log_folders_mode: '0700'
+
+
 # Sysctl virtual memory setting
 elasticsearch_sysctl_rules:
   - name: 'vm.max_map_count'
     value: 262144
     state: 'present'
 
-################################### Cluster ###################################
+
+# Security limits rules
+elasticsearch_limits_rules:
+  - 'elasticsearch soft memlock unlimited'
+  - 'elasticsearch hard memlock unlimited'
+
+
+# Elasticsearch paths
+elasticsearch_folders:
+  conf: '/etc/elasticsearch'
+  data:
+    - '/var/lib/elasticsearch'
+  home: '/usr/share/elasticsearch'
+  log: '/var/log/elasticsearch'
+  pid: '/var/run/elasticsearch'
+  work: '/tmp/elasticsearch'
+
+
+# Default configuration file
+#---------------------------
+elasticsearch_etc_default_start_daemon: 'true'
+elasticsearch_etc_default_heap_size: '1g'
+elasticsearch_etc_default_heap_new_size: ''
+elasticsearch_etc_default_direct_size: ''
+elasticsearch_etc_default_max_open_files: 65536
+elasticsearch_etc_default_max_locked_memory: 'unlimited'
+elasticsearch_etc_default_max_map_count: 262144
+elasticsearch_etc_default_log_dir: "{{ elasticsearch_folders.log }}"
+elasticsearch_etc_default_data_dir: "{{ elasticsearch_folders.data }}"
+elasticsearch_etc_default_work_dir: "{{ elasticsearch_folders.work }}"
+elasticsearch_etc_default_conf_dir: "{{ elasticsearch_folders.conf }}"
+elasticsearch_etc_default_conf_file: "{{ elasticsearch_folders.conf ~ '/elasticsearch.yml' }}"
+elasticsearch_etc_default_java_opts: []
+elasticsearch_etc_default_restart_on_upgrade: 'true'
+
+
+# Main configuration file
+#------------------------
+
+# Cluster
 elasticsearch_cluster_name: 'elasticsearch'
 
-
-#################################### Node #####################################
-elasticsearch_node_master: True
-elasticsearch_node_data: True
+# Node
+elasticsearch_node_name: "{{ ansible_hostname }}"
 elasticsearch_custom_var: {}
-elasticsearch_node_max_local_storage_nodes: 1
 
+# Paths
+elasticsearch_path_data: "{{ elasticsearch_etc_default_data_dir }}"
+elasticsearch_path_logs: "{{ elasticsearch_etc_default_log_dir }}"
 
-#################################### Index ####################################
-elasticsearch_index_number_of_shards: 5
-elasticsearch_index_number_of_replicas: 1
+# Memory
+elasticsearch_bootstrap_mlockall: 'true'
 
-
-#################################### Paths ####################################
-elasticsearch_path_conf: '/etc/elasticsearch'
-elasticsearch_path_work: '/tmp/elasticsearch'
-elasticsearch_path_logs: '/var/log/elasticsearch'
-elasticsearch_path_plugins: '/usr/share/elasticsearch/plugins'
-elasticsearch_path_pid: '/var/run/elasticsearch'
-elasticsearch_path_data:
-  - '/var/lib/elasticsearch'
-
-
-#################################### Plugin ###################################
-elasticsearch_plugin_mandatory: []
-
-
-################################### Memory ####################################
-elasticsearch_bootstrap_mlockall: False
-
-
-############################## Network And HTTP ###############################
-elasticsearch_network_bind_host: '127.0.0.1'
-elasticsearch_network_publish_host: '127.0.0.1'
+# Network
 elasticsearch_network_host: '127.0.0.1'
-elasticsearch_transport_tcp_port: 9300
-elasticsearch_transport_tcp_compress: False
 elasticsearch_http_port: 9200
-elasticsearch_http_max_content_length: '100mb'
-elasticsearch_http_enabled: True
 
-
-################################### Gateway ###################################
-elasticsearch_gateway_type: 'local'
-elasticsearch_gateway_recover_after_nodes: 1
-elasticsearch_gateway_recover_after_time: '5m'
-elasticsearch_gateway_expected_nodes: 2
-
-
-############################# Recovery Throttling #############################
-elasticsearch_cluster_routing_allocation_node_initial_primaries_recoveries: 4
-elasticsearch_cluster_routing_allocation_node_concurrent_recoveries: 2
-elasticsearch_indices_recovery_max_bytes_per_sec: '20mb'
-elasticsearch_indices_recovery_concurrent_streams: 5
-
-
-################################## Discovery ##################################
+# Discovery
 elasticsearch_discovery_zen_minimum_master_nodes: 1
-elasticsearch_discovery_zen_ping_timeout: '3s'
-elasticsearch_discovery_zen_ping_multicast_enabled: True
 elasticsearch_discovery_zen_ping_unicast_hosts: []
 
+# Gateway
+elasticsearch_gateway_recover_after_nodes: 1
 
-################################## Slow Log ##################################
-elasticsearch_index_search_slowlog_threshold_query_warn: '10s'
-elasticsearch_index_search_slowlog_threshold_query_info: '5s'
-elasticsearch_index_search_slowlog_threshold_query_debug: '2s'
-elasticsearch_index_search_slowlog_threshold_query_trace: '500ms'
-
-elasticsearch_index_search_slowlog_threshold_fetch_warn: '1s'
-elasticsearch_index_search_slowlog_threshold_fetch_info: '800ms'
-elasticsearch_index_search_slowlog_threshold_fetch_debug: '500ms'
-elasticsearch_index_search_slowlog_threshold_fetch_trace: '200ms'
-
-elasticsearch_index_indexing_slowlog_threshold_index_warn: '10s'
-elasticsearch_index_indexing_slowlog_threshold_index_info: '5s'
-elasticsearch_index_indexing_slowlog_threshold_index_debug: '2s'
-elasticsearch_index_indexing_slowlog_threshold_index_trace: '500ms'
+# Various
+elasticsearch_various_node_max_local_storage_nodes: 1
+elasticsearch_various_action_destructive_requires_name: 'true'
 
 
-################################## GC Logging ################################
-elasticsearch_monitor_jvm_gc_young_warn: '1000ms'
-elasticsearch_monitor_jvm_gc_young_info: '700ms'
-elasticsearch_monitor_jvm_gc_young_debug: '400ms'
+# Logging configuration file
+#---------------------------
 
-elasticsearch_monitor_jvm_gc_old_warn: '10s'
-elasticsearch_monitor_jvm_gc_old_info: '5s'
-elasticsearch_monitor_jvm_gc_old_debug: '2s'
+elasticsearch_logging:
+  es.logger.level: INFO
+  rootLogger: ${es.logger.level}, console, file
+  logger:
+    action: DEBUG
+    deprecation: INFO, deprecation_log_file
+    com.amazonaws: WARN
+    com.amazonaws.jmx.SdkMBeanRegistrySupport: ERROR
+    com.amazonaws.metrics.AwsSdkMetrics: ERROR
+    org.apache.http: INFO
+    index.search.slowlog: TRACE, index_search_slow_log_file
+    index.indexing.slowlog: TRACE, index_indexing_slow_log_file
+
+  additivity:
+    index.search.slowlog: false
+    index.indexing.slowlog: false
+    deprecation: false
+
+  appender:
+    console:
+      type: console
+      layout:
+        type: consolePattern
+        conversionPattern: "[%d{ISO8601}][%-5p][%-25c] %m%n"
+
+    file:
+      type: file
+      file: ${path.logs}/${cluster.name}.log
+      layout:
+        type: pattern
+        conversionPattern: "[%d{ISO8601}][%-5p][%-25c] %.10000m%n"
+
+    deprecation_log_file:
+      type: file
+      file: ${path.logs}/${cluster.name}_deprecation.log
+      layout:
+        type: pattern
+        conversionPattern: "[%d{ISO8601}][%-5p][%-25c] %m%n"
+
+    index_search_slow_log_file:
+      type: file
+      file: ${path.logs}/${cluster.name}_index_search_slowlog.log
+      layout:
+        type: pattern
+        conversionPattern: "[%d{ISO8601}][%-5p][%-25c] %m%n"
+
+    index_indexing_slow_log_file:
+      type: file
+      file: ${path.logs}/${cluster.name}_index_indexing_slowlog.log
+      layout:
+        type: pattern
+        conversionPattern: "[%d{ISO8601}][%-5p][%-25c] %m%n"
 
 
-################################## Security ################################
-elasticsearch_http_jsonp_enable: False
+# Logrotate settings
+#-------------------
+elasticsearch_logrotate_rules:
+  - 'daily'
+  - 'dateext'
+  - 'dateformat _%Y-%m-%d'
+  - 'rotate 31'
+  - 'copytruncate'
+  - 'compress'
+  - 'delaycompress'
+  - 'missingok'
+  - "create 644 {{ elasticsearch_user_name }} {{ elasticsearch_group_name }}"

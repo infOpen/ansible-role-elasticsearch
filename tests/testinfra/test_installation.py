@@ -5,7 +5,7 @@ import pytest
 
 
 # pytestmark = pytest.mark.docker_images(
-pytestmark = pytest.mark.docker_images('infopen/ubuntu-xenial-ssh-py27:0.1.0')
+pytestmark = pytest.mark.docker_images('infopen/ubuntu-xenial-ssh-py27:0.2.0')
 
 
 def test_packages(Package):
@@ -14,7 +14,7 @@ def test_packages(Package):
     """
 
     packages = [
-        'python-apt-common', 'python-apt', 'elasticsearch', 'openjdk-9-jre'
+        'python-apt-common', 'python-apt', 'elasticsearch', 'openjdk-8-jre'
     ]
 
     for package in packages:
@@ -39,7 +39,7 @@ def test_user(User):
     assert user.exists
     assert user.group == 'elasticsearch'
     assert user.shell == '/bin/false'
-    assert user.home == '/var/lib/elasticsearch'
+    assert user.home == '/home/elasticsearch'
 
 
 def test_data_folder(File):
@@ -64,15 +64,20 @@ def test_config_files(File):
         '/etc/elasticsearch/elasticsearch.yml',
         '/etc/elasticsearch/logging.yml',
         '/etc/default/elasticsearch',
-        '/etc/logrotate.d/elastic-search'
     ]
 
     for cur_file in files:
         cfg_file = File(cur_file)
         assert cfg_file.exists
         assert cfg_file.is_file
-        assert cfg_file.user == 'root'
-        assert cfg_file.group == 'root'
+        assert cfg_file.user == 'elasticsearch'
+        assert cfg_file.group == 'elasticsearch'
+
+    logrotate_file = File('/etc/logrotate.d/elasticsearch')
+    assert logrotate_file.exists
+    assert logrotate_file.is_file
+    assert logrotate_file.user == 'root'
+    assert logrotate_file.group == 'root'
 
 
 def test_process(Process):
@@ -80,4 +85,4 @@ def test_process(Process):
     Test about elasticsearch processus
     """
 
-    assert len(Process.filter(user='elasticsearch')) == 1
+    assert len(Process.filter(user='elastic+')) == 1

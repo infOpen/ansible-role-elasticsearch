@@ -49,13 +49,3 @@
     value: "{{ item.value }}"
     state: "{{ item.state }}"
   with_items: "{{ elasticsearch_sysctl_rules }}"
-
-
-- name: 'Create pid dir'
-  become: True
-  file:
-    path: "{{ elasticsearch_path_pid }}"
-    state: 'directory'
-    owner: 'elasticsearch'
-    group: 'elasticsearch'
-    mode: '0750'
