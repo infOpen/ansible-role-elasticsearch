@@ -131,7 +131,8 @@ Specific OS family vars :
 Dependencies
 ------------
 
-- infOpen.openjdk-jre
+- role: infOpen.openjdk-jre
+  openjdk_jre_version: 8
 
 Example Playbook
 ----------------

@@ -53,7 +53,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           ansible_python_interpreter: '/usr/bin/env python2.7'
         }
         ansible.host_vars = {
-          'elasticsearch_xenial' => {'openjdk_jre_version' => 9}
+          'elasticsearch_xenial' => {'openjdk_jre_version' => 8}
         }
       end
 

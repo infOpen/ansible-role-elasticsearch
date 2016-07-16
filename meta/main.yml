@@ -15,4 +15,5 @@ galaxy_info:
     - 'networking'
     - 'web'
 dependencies:
-  - 'infOpen.openjdk-jre'
+  - role: 'infOpen.openjdk-jre'
+    openjdk_jre_version: 8
