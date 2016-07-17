@@ -15,14 +15,14 @@
     group: 'root'
     owner: 'root'
     mode: '0644'
-  register: 'elasticseach_repository_updated'
+  register: 'elasticsearch_repository_updated'
 
 
 - name: 'Update packages list if repository updated'
   become: True
   apt:
     update_cache: True
-  when: "{{ elasticseach_repository_updated | changed }}"
+  when: "{{ elasticsearch_repository_updated | changed }}"
 
 
 - name: 'Update packages list if cache is too old'
