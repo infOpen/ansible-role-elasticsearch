@@ -3,9 +3,6 @@
 # Role tests
 
 - hosts: 'all'
-  pre_tasks:
-    - debug:
-        var: role_name
   roles:
     - role: "{{ role_name }}"
   vars:
