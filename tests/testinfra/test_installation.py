@@ -86,3 +86,14 @@ def test_process(Process):
     """
 
     assert len(Process.filter(user='elastic+')) == 1
+
+
+def test_service(Command, Service, Socket):
+    """
+    Test about elasticsearch service
+    """
+
+    assert Service('ssh').is_enabled
+    assert Service('ssh').is_running
+    assert Command('systemctl status sshd').rc == 0
+    assert Socket("tcp://0.0.0.0:22").is_listening
