@@ -4,31 +4,16 @@ galaxy_info:
   description: 'Install elastic search package on Debian or Ubuntu'
   company: 'Infopen (http://www.infopen.pro)'
   license: 'MIT'
-  min_ansible_version: '1.5'
+  min_ansible_version: '2.1'
   github_branch: 'master'
   platforms:
     - name: 'Ubuntu'
       versions:
-        - 'precise'
-        - 'quantal'
-        - 'raring'
-        - 'saucy'
-        - 'trusty'
-        - 'utopic'
-        - 'vivid'
-    - name: 'Debian'
-      versions:
-        - 'all'
-        - 'etch'
-        - 'jessie'
-        - 'lenny'
-        - 'squeeze'
-        - 'wheezy'
-
+        - 'xenial'
   galaxy_tags:
     - 'database:nosql'
     - 'networking'
     - 'web'
-
 dependencies:
-  - 'infOpen.openjdk-jre'
+  - role: 'infOpen.openjdk-jre'
+    openjdk_jre_version: 8

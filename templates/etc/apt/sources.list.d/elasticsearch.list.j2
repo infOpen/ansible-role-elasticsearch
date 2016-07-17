@@ -1,0 +1,4 @@
+#{{ ansible_managed }}
+{% set elasticsearch_repository_version = (elasticsearch_version.split('.'))[0] %}
+
+deb http://packages.elastic.co/elasticsearch/{{ elasticsearch_repository_version }}.x/debian stable main
