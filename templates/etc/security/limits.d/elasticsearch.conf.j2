@@ -1,0 +1,5 @@
+# {{ ansible_managed }}
+
+{% for limit in elasticsearch_limits_rules %}
+{{ limit }}
+{% endfor %}

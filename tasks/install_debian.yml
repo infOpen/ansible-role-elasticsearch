@@ -1,31 +1,51 @@
 ---
 
-- name    : install elasticsearch key
-  apt_key :
-    url     : https://packages.elastic.co/GPG-KEY-elasticsearch
-    state   : present
+- name: 'Install elasticsearch key'
+  become: True
+  apt_key:
+    url: 'https://packages.elastic.co/GPG-KEY-elasticsearch'
+    state: 'present'
 
-- name : add elasticsearch repository
-  template :
-    dest  : /etc/apt/sources.list.d/elasticsearch.list
-    src   : "{{ role_path }}/templates/elasticsearch.list.j2"
-    group : root
-    owner : root
-    mode  : 0644
 
-- name : install elasticsearch
-  apt  :
-    name  : "{{ item }}"
-    state : "{{ elasticsearch_package_state }}"
+- name: 'Add elasticsearch repository'
+  become: True
+  template:
+    dest: '/etc/apt/sources.list.d/elasticsearch.list'
+    src: "{{ role_path }}/templates/etc/apt/sources.list.d/elasticsearch.list.j2"
+    group: 'root'
+    owner: 'root'
+    mode: '0644'
+  register: 'elasticsearch_repository_updated'
+
+
+- name: 'Update packages list if repository updated'
+  become: True
+  apt:
     update_cache: True
-  with_items : "{{ elasticsearch_packages }}"
-  notify :
-    - restart elasticsearch
+  when: "{{ elasticsearch_repository_updated | changed }}"
 
-- name : create pid dir
-  file :
-    path  : "{{ elasticsearch_path_pid }}"
-    state : directory
-    owner : elasticsearch
-    group : elasticsearch
-    mode  : 0750
+
+- name: 'Update packages list if cache is too old'
+  become: True
+  apt:
+    update_cache: True
+    cache_valid_time: "{{ elasticsearch_apt_cache_valid_time }}"
+
+
+- name: 'Install elasticsearch'
+  become: True
+  package:
+    name: "{{ item }}"
+    state: "{{ elasticsearch_package_state }}"
+  with_items: "{{ elasticsearch_packages }}"
+  notify:
+    - 'restart elasticsearch'
+
+
+- name: 'Update virtual memory sysctl setting'
+  become: True
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: "{{ item.state }}"
+  with_items: "{{ elasticsearch_sysctl_rules }}"

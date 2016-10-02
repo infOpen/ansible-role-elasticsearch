@@ -2,16 +2,21 @@
 
 # Tasks file for elasticsearch
 
-- name: Load the OS specific varibles
+- name: 'Load the OS specific varibles'
   include_vars: "{{ role_path }}/vars/{{ ansible_os_family }}.yml"
-
-- include: install_debian.yml
   tags:
-    - install
-    - elasticsearch
-  when: ansible_os_family == "Debian"
+    - 'install'
+    - 'elasticsearch'
 
-- include: configure.yml
+
+- include: 'install_debian.yml'
+  when: "{{ ansible_os_family == 'Debian' }}"
   tags:
-    - config
-    - elasticsearch
+    - 'install'
+    - 'elasticsearch'
+
+
+- include: 'configure.yml'
+  tags:
+    - 'config'
+    - 'elasticsearch'
