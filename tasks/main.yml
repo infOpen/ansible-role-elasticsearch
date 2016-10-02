@@ -5,18 +5,18 @@
 - name: 'Load the OS specific varibles'
   include_vars: "{{ role_path }}/vars/{{ ansible_os_family }}.yml"
   tags:
-    - 'install'
-    - 'elasticsearch'
+    - 'elasticsearch::role'
+    - 'elasticsearch::install'
 
 
 - include: 'install_debian.yml'
   when: "{{ ansible_os_family == 'Debian' }}"
   tags:
-    - 'install'
-    - 'elasticsearch'
+    - 'elasticsearch::role'
+    - 'elasticsearch::install'
 
 
 - include: 'configure.yml'
   tags:
-    - 'config'
-    - 'elasticsearch'
+    - 'elasticsearch::role'
+    - 'elasticsearch::config'
