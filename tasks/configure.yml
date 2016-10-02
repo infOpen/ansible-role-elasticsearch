@@ -108,12 +108,15 @@
   register: 'elasticsearch_systemd_config'
   notify:
     - 'restart elasticsearch'
+  when: "{{ (ansible_distribution_release | lower) == 'xenial' }}"
 
 
 - name: 'Reload systemd configuration'
   become: True
   command: '/bin/systemctl daemon-reload'
-  when: "{{ elasticsearch_systemd_config | changed }}"
+  when:
+    - "{{ elasticsearch_systemd_config | changed }}"
+    - "{{ (ansible_distribution_release | lower) == 'xenial' }}"
 
 
 - name: 'Enable elasticsearch service on boot'

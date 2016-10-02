@@ -5,6 +5,9 @@
 VAGRANTFILE_API_VERSION = '2'
 
 VMS = {
+  :elasticsearch_trusty => {
+    :box => 'ubuntu/trusty64'
+  },
   :elasticsearch_xenial => {
     :box => 'ubuntu/xenial64'
   }
@@ -47,7 +50,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       # Run Ansible provisioning
       vm_config.vm.provision 'ansible' do |ansible|
-        ansible.playbook = 'tests/test_vagrant.yml'
+        ansible.playbook = 'testing_deployment.yml'
         ansible.galaxy_role_file = './requirements.yml'
         ansible.extra_vars = {
           ansible_python_interpreter: '/usr/bin/env python2.7'
