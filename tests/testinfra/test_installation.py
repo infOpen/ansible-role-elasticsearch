@@ -5,20 +5,30 @@ import pytest
 
 
 # pytestmark = pytest.mark.docker_images(
-pytestmark = pytest.mark.docker_images('infopen/ubuntu-xenial-ssh-py27:0.2.0')
+pytestmark = pytest.mark.docker_images(
+    'infopen/ubuntu-trusty-ssh:0.1.0',
+    'infopen/ubuntu-xenial-ssh-py27:0.2.0'
+)
 
 
-def test_packages(Package):
+def test_packages(SystemInfo, Package):
     """
     Tests about packages installed on all systems
     """
 
-    packages = [
-        'python-apt-common', 'python-apt', 'elasticsearch', 'openjdk-8-jre'
-    ]
+    packages = ['python-apt-common', 'python-apt', 'elasticsearch']
 
     for package in packages:
         assert Package(package).is_installed is True
+
+    if SystemInfo.codename == 'trusty':
+        assert Package('openjdk-7-jre').is_installed is True
+    elif SystemInfo.codename == 'xenial':
+        assert Package('openjdk-8-jre').is_installed is True
+
+
+def test_os_type(SystemInfo):
+    assert SystemInfo.type == 'linux'
 
 
 def test_group(Group):
@@ -93,7 +103,7 @@ def test_service(Command, Service, Socket):
     Test about elasticsearch service
     """
 
-    assert Service('ssh').is_enabled
-    assert Service('ssh').is_running
-    assert Command('systemctl status sshd').rc == 0
-    assert Socket("tcp://0.0.0.0:22").is_listening
+    assert Service('elasticsearch').is_enabled
+    assert Service('elasticsearch').is_running
+    assert Socket("tcp://127.0.0.1:9200").is_listening
+    assert Socket("tcp://127.0.0.1:9300").is_listening
