@@ -9,6 +9,7 @@ galaxy_info:
   platforms:
     - name: 'Ubuntu'
       versions:
+        - 'trusty'
         - 'xenial'
   galaxy_tags:
     - 'database:nosql'
@@ -16,4 +17,8 @@ galaxy_info:
     - 'web'
 dependencies:
   - role: 'infOpen.openjdk-jre'
+    openjdk_jre_version: 7
+    when: "{{ (ansible_distribution_release | lower) == 'trusty' }}"
+  - role: 'infOpen.openjdk-jre'
     openjdk_jre_version: 8
+    when: "{{ (ansible_distribution_release | lower) == 'xenial' }}"
