@@ -2,6 +2,8 @@
 
 # Debian specific vars
 
+elasticsearch_repository_version: "{{ (elasticsearch_version.split('.'))[0] }}"
+
 elasticsearch_packages:
   - 'elasticsearch'
 
