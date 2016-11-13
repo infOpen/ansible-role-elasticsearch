@@ -97,6 +97,16 @@
     - 'restart elasticsearch'
 
 
+- name: 'Ensure systemd target folder exists'
+  become: True
+  file:
+    dest: '/usr/lib/systemd/system'
+    state: 'directory'
+  notify:
+    - 'restart elasticsearch'
+  when: "{{ (ansible_distribution_release | lower) == 'xenial' }}"
+
+
 - name: 'Generate systemd service file'
   become: True
   template:
