@@ -4,13 +4,16 @@
 
 # Package variables
 #------------------
+elasticsearch_apt_cache_valid_time: 3600
 elasticsearch_package_state: 'latest'
+elasticsearch_packages: "{{ _elasticsearch_packages }}"
+elasticsearch_repository_version: "{{ _elasticsearch_repository_version }}.x"
 
 # Service variables
 #------------------
+elasticsearch_service_name: "{{ _elasticsearch_service_name }}"
 elasticsearch_service_state: 'started'
 elasticsearch_service_enabled: True
-elasticsearch_apt_cache_valid_time: 3600
 
 # Elacticsearch default version
 elasticsearch_version: '2.3'
