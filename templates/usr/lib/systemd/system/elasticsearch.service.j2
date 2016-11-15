@@ -19,7 +19,13 @@ WorkingDirectory=/usr/share/elasticsearch
 User={{ elasticsearch_user_name }}
 Group={{ elasticsearch_group_name }}
 
+{% if (elasticsearch_version | version_compare('2.0', '>=')) %}
 ExecStartPre=/usr/share/elasticsearch/bin/elasticsearch-systemd-pre-exec
+{% else %}
+PermissionsStartOnly=true
+ExecStartPre=/bin/mkdir -p ${PID_DIR}
+ExecStartPre=/bin/chown -R {{ elasticsearch_user_name }}:{{ elasticsearch_user_name }} ${PID_DIR}
+{% endif %}
 
 ExecStart=/usr/share/elasticsearch/bin/elasticsearch \
                                                 -Des.pidfile=${PID_DIR}/elasticsearch.pid \
