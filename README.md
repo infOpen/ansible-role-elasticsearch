@@ -6,47 +6,58 @@ Install elasticsearch package.
 
 ## Requirements
 
-This role requires Ansible 2.1 or higher, and platform requirements are listed
-in the metadata file.
+This role requires Ansible 2.1 or higher,
+and platform requirements are listed in the metadata file.
 
 ## Testing
 
-This role has some testing methods:
+This role use [Molecule](https://github.com/metacloud/molecule/) to run tests.
 
-### Automatically with Travis
+Locally, you can run tests on Docker (default driver) or Vagrant.
+Travis run tests using Docker driver only.
 
-Tests runs automatically on Travis on push, release, pr, ... using docker testing containers
+Currently, tests are done on:
+- Debian Jessie
+- Ubuntu Trusty
+- Ubuntu Xenial
 
-### Locally with Docker
+and use:
+- Ansible 2.0.x
+- Ansible 2.1.x
+- Ansible 2.2.x
+- Ansible 2.3.x
 
-You can use Docker to run tests on ephemeral containers.
+### Running tests
+
+#### Using Docker driver
 
 ```
-make test-docker
+$ tox
 ```
 
-### Locally with Vagrant
-
-You can use Vagrant to run tests on virtual machines.
+#### Using Vagrant driver
 
 ```
-make test-vagrant
+$ MOLECULE_DRIVER=vagrant tox
 ```
 
 ## Role Variables
 
-### Defaults variables
+### Default role variables
 
-```yaml
+``` yaml
 # Package variables
 #------------------
+elasticsearch_apt_cache_valid_time: 3600
 elasticsearch_package_state: 'latest'
+elasticsearch_packages: "{{ _elasticsearch_packages }}"
+elasticsearch_repository_version: "{{ _elasticsearch_repository_version }}.x"
 
 # Service variables
 #------------------
+elasticsearch_service_name: "{{ _elasticsearch_service_name }}"
 elasticsearch_service_state: 'started'
 elasticsearch_service_enabled: True
-elasticsearch_apt_cache_valid_time: 3600
 
 # Elacticsearch default version
 elasticsearch_version: '2.3'
@@ -223,30 +234,16 @@ elasticsearch_logrotate_rules:
   - "create 644 {{ elasticsearch_user_name }} {{ elasticsearch_group_name }}"
 ```
 
-### Specific OS family vars
-
-```yaml
-# Debian
-elasticsearch_packages :
-  - elasticsearch
-elasticsearch_service_name: elasticsearch
-```
-
 ## Dependencies
 
-```yaml
-- role: infOpen.openjdk-jre
-  openjdk_jre_version: 8
-```
+None
 
 ## Example Playbook
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-```yaml
+``` yaml
 - hosts: servers
   roles:
-     - { role: infOpen.elasticsearch }
+    - { role: infOpen.elasticsearch }
 ```
 
 ## License

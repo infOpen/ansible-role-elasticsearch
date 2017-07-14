@@ -2,6 +2,13 @@
 
 # Tasks file for elasticsearch
 
+- name: 'INIT | Manage variables to use for our target'
+  include: "{{ role_path }}/tasks/manage_variables.yml"
+  tags:
+    - 'role::elasticsearch'
+    - 'role::elasticsearch::init'
+
+
 - name: 'Load the OS specific varibles'
   include_vars: "{{ role_path }}/vars/{{ ansible_os_family | lower }}.yml"
   tags:

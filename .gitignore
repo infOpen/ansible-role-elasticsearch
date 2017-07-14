@@ -1,3 +1,8 @@
+# Ansible
+*.retry
+roles/
+tests/roles/
+
 # Swap files
 *.swo
 *.swp
@@ -8,14 +13,12 @@
 # Pytest
 .cache
 
-# Vagrant
-.vagrant
-*.retry
-*.log
-
-# Tox testing
+# Tox
 .tox
 
-# Requirement downloads
-roles
-tests/roles
+# Vagrant
+.vagrant
+*.log
+
+# Molecule
+.molecule

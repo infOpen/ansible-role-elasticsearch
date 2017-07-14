@@ -1,6 +1,6 @@
 ---
 
-# Handlers file for elasticsearch
+# Handlers main file for elasticsearch role
 
 - name: 'restart elasticsearch'
   become: True

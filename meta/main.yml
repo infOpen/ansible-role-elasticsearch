@@ -1,24 +1,20 @@
 ---
+
 galaxy_info:
   author: 'Alexandre Chaussier'
-  description: 'Install elastic search package on Debian or Ubuntu'
+  description: 'Ansible role to install and configure ElasticSearch'
   company: 'Infopen (http://www.infopen.pro)'
   license: 'MIT'
   min_ansible_version: '2.1'
   github_branch: 'master'
   platforms:
+    - name: 'Debian'
+      versions:
+        - 'jessie'
     - name: 'Ubuntu'
       versions:
         - 'trusty'
         - 'xenial'
   galaxy_tags:
-    - 'database:nosql'
-    - 'networking'
     - 'web'
-dependencies:
-  - role: 'infOpen.openjdk-jre'
-    openjdk_jre_version: 7
-    when: "{{ (ansible_distribution_release | lower) == 'trusty' }}"
-  - role: 'infOpen.openjdk-jre'
-    openjdk_jre_version: 8
-    when: "{{ (ansible_distribution_release | lower) == 'xenial' }}"
+dependencies: []
