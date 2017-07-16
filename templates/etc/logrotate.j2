@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
 
-{{ elasticsearch_folders.log }}/*.log {
+{{ elasticsearch_log_dir_path }}/*.log {
 {% for rule in elasticsearch_logrotate_rules %}
   {{ rule }}
 {% endfor %}

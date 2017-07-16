@@ -1,0 +1,37 @@
+---
+
+# Service management tasks
+
+- name: 'SERVICE | Ensure systemd target folder exists'
+  file:
+    dest: '/usr/lib/systemd/system'
+    state: 'directory'
+  notify: 'HANDLER | Restart elasticsearch'
+  when: "(ansible_distribution_release | lower) == 'xenial'"
+
+
+- name: 'SERVICE | Generate systemd service file'
+  template:
+    src: "{{ role_path }}/templates/service/systemd.service.j2"
+    dest: '/usr/lib/systemd/system/elasticsearch.service'
+    group: "{{ elasticsearch_user_name }}"
+    owner: "{{ elasticsearch_group_name }}"
+    mode: "{{ elasticsearch_config_files_mode }}"
+  register: 'elasticsearch_systemd_config'
+  notify: 'HANDLER | Restart elasticsearch'
+  when: "(ansible_distribution_release | lower) == 'xenial'"
+
+
+- name: 'SERVICE | Reload systemd configuration'
+  command: '/bin/systemctl daemon-reload'
+  when:
+    - "elasticsearch_systemd_config | changed"
+    - "(ansible_distribution_release | lower) == 'xenial'"
+
+
+- name: 'SERVICE | Manage elasticsearch service'
+  service:
+    name: "{{ elasticsearch_service_name }}"
+    enabled: "{{ elasticsearch_service_enabled }}"
+    state: "{{ elasticsearch_service_state }}"
+  failed_when: False

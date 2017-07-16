@@ -1,0 +1,29 @@
+---
+
+# Debian OS family specific vars
+
+# Packages and repositories management
+_elasticsearch_system_dependencies:
+  - name: 'ca-certificates'
+  - name: 'apt-transport-https'
+  - name: 'apt-utils'
+
+_elasticsearch_repositories:
+  - repo: "deb https://artifacts.elastic.co/packages/{{ elasticsearch_version }}/apt stable main"
+
+_elasticsearch_packages:
+  - name: 'elasticsearch'
+
+
+# Service management
+_elasticsearch_service_name: 'elasticsearch'
+
+
+# Paths management
+_elasticsearch_data_dir_path: '/var/lib/elasticsearch'
+_elasticsearch_etc_dir_path: '/etc/elasticsearch'
+_elasticsearch_home_dir_path: '/usr/share/elasticsearch'
+_elasticsearch_limits_dir_path: '/etc/security/limits.d'
+_elasticsearch_log_dir_path: '/var/log/elasticsearch'
+_elasticsearch_logrotate_dir_path: '/etc/logrotate.d'
+_elasticsearch_pid_dir_path: '/var/run/elasticsearch'

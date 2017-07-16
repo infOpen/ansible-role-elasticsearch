@@ -7,23 +7,30 @@
   tags:
     - 'role::elasticsearch'
     - 'role::elasticsearch::init'
+    - 'role::elasticsearch::install'
+    - 'role::elasticsearch::config'
 
 
-- name: 'Load the OS specific varibles'
-  include_vars: "{{ role_path }}/vars/{{ ansible_os_family | lower }}.yml"
+- name: 'INSTALL | Run OS family install tasks'
+  become: True
+  include: "{{ role_path }}/tasks/install_{{ ansible_os_family | lower }}.yml"
   tags:
-    - 'elasticsearch::role'
-    - 'elasticsearch::install'
+    - 'role::elasticsearch'
+    - 'role::elasticsearch::install'
 
 
-- include: 'install_debian.yml'
-  when: "{{ (ansible_os_family | lower) == 'debian' }}"
+- name: 'CONFIG | Run configuration tasks'
+  become: True
+  include: "{{ role_path }}/tasks/configure.yml"
   tags:
-    - 'elasticsearch::role'
-    - 'elasticsearch::install'
+    - 'role::elasticsearch'
+    - 'role::elasticsearch::config'
 
 
-- include: 'configure.yml'
+- name: 'SERVICE | Run service management tasks'
+  become: True
+  include: "{{ role_path }}/tasks/manage_service.yml"
   tags:
-    - 'elasticsearch::role'
-    - 'elasticsearch::config'
+    - 'role::elasticsearch'
+    - 'role::elasticsearch::config'
+    - 'role::elasticsearch::install'

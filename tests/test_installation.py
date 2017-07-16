@@ -3,6 +3,7 @@ Role tests
 """
 
 import pytest
+
 from testinfra.utils.ansible_runner import AnsibleRunner
 
 testinfra_hosts = AnsibleRunner('.molecule/ansible_inventory').get_hosts('all')
@@ -12,7 +13,6 @@ testinfra_hosts = AnsibleRunner('.molecule/ansible_inventory').get_hosts('all')
     ('python-apt-common', None),
     ('python-apt', None),
     ('elasticsearch', None),
-    ('openjdk-7-jre', 'trusty'),
     ('openjdk-8-jre', 'xenial'),
 ])
 def test_packages_debian_ubuntu(host, name, codename):
@@ -63,7 +63,6 @@ def test_data_folder(host):
 
 @pytest.mark.parametrize('name,user,group', [
     ('/etc/elasticsearch/elasticsearch.yml', 'elasticsearch', 'elasticsearch'),
-    ('/etc/elasticsearch/logging.yml', 'elasticsearch', 'elasticsearch'),
     ('/etc/default/elasticsearch', 'elasticsearch', 'elasticsearch'),
     ('/etc/logrotate.d/elasticsearch', 'root', 'root'),
 ])

@@ -49,9 +49,9 @@ $ MOLECULE_DRIVER=vagrant tox
 # Package variables
 #------------------
 elasticsearch_apt_cache_valid_time: 3600
-elasticsearch_package_state: 'latest'
 elasticsearch_packages: "{{ _elasticsearch_packages }}"
-elasticsearch_repository_version: "{{ _elasticsearch_repository_version }}.x"
+elasticsearch_system_dependencies: "{{ _elasticsearch_system_dependencies }}"
+elasticsearch_repositories: "{{ _elasticsearch_repositories }}"
 
 # Service variables
 #------------------
@@ -59,33 +59,38 @@ elasticsearch_service_name: "{{ _elasticsearch_service_name }}"
 elasticsearch_service_state: 'started'
 elasticsearch_service_enabled: True
 
-# Elacticsearch default version
-elasticsearch_version: '2.3'
+# Elasticsearch default version
+elasticsearch_version: '5.x'
 
-# Elasticsearch config files name
-elasticsearch_main_file: 'elasticsearch.yml'
-elasticsearch_logging_file: 'logging.yml'
-elasticsearch_logrotate_file: 'logrotate.j2'
+# Paths management
+elasticsearch_config_files_mode: '0400'
+
+elasticsearch_data_dir_path: "{{ _elasticsearch_data_dir_path }}"
+elasticsearch_etc_dir_path: "{{ _elasticsearch_etc_dir_path }}"
+elasticsearch_home_dir_path: "{{ _elasticsearch_home_dir_path }}"
+elasticsearch_limits_dir_path: "{{ _elasticsearch_limits_dir_path }}"
+elasticsearch_log_dir_path: "{{ _elasticsearch_log_dir_path }}"
+elasticsearch_logrotate_dir_path: "{{ _elasticsearch_logrotate_dir_path }}"
+elasticsearch_pid_dir_path: "{{ _elasticsearch_pid_dir_path }}"
+
+elasticsearch_dirs_paths:
+  - path: "{{ _elasticsearch_data_dir_path }}"
+    mode: '0700'
+    state: 'directory'
+  - path: "{{ _elasticsearch_etc_dir_path }}"
+    mode: '0500'
+    state: 'directory'
+  - path: "{{ _elasticsearch_home_dir_path }}"
+    mode: '0700'
+    state: 'directory'
+  - path: "{{ _elasticsearch_log_dir_path }}"
+    mode: '0700'
+    state: 'directory'
+
 
 # User and group management
 elasticsearch_user_name: 'elasticsearch'
 elasticsearch_group_name: 'elasticsearch'
-
-# Configuration files and folders properties
-elasticsearch_etc_files_owner: "{{ elasticsearch_user_name }}"
-elasticsearch_etc_files_group: "{{ elasticsearch_group_name }}"
-elasticsearch_etc_files_mode: '0400'
-elasticsearch_etc_folders_owner: "{{ elasticsearch_user_name }}"
-elasticsearch_etc_folders_group: "{{ elasticsearch_group_name }}"
-elasticsearch_etc_folders_mode: '0500'
-
-# Data and logs folders properties
-elasticsearch_data_folders_owner: "{{ elasticsearch_user_name }}"
-elasticsearch_data_folders_group: "{{ elasticsearch_group_name }}"
-elasticsearch_data_folders_mode: '0700'
-elasticsearch_log_folders_owner: "{{ elasticsearch_user_name }}"
-elasticsearch_log_folders_group: "{{ elasticsearch_group_name }}"
-elasticsearch_log_folders_mode: '0700'
 
 
 # Sysctl virtual memory setting
@@ -101,123 +106,47 @@ elasticsearch_limits_rules:
   - 'elasticsearch hard memlock unlimited'
 
 
-# Elasticsearch paths
-elasticsearch_folders:
-  conf: '/etc/elasticsearch'
-  data:
-    - '/var/lib/elasticsearch'
-  home: '/usr/share/elasticsearch'
-  log: '/var/log/elasticsearch'
-  pid: '/var/run/elasticsearch'
-  work: '/tmp/elasticsearch'
-
-
 # Default configuration file
 #---------------------------
-elasticsearch_etc_default_start_daemon: 'true'
-elasticsearch_etc_default_heap_size: '1g'
-elasticsearch_etc_default_heap_new_size: ''
-elasticsearch_etc_default_direct_size: ''
-elasticsearch_etc_default_max_open_files: 65536
-elasticsearch_etc_default_max_locked_memory: 'unlimited'
-elasticsearch_etc_default_max_map_count: 262144
-elasticsearch_etc_default_log_dir: "{{ elasticsearch_folders.log }}"
-elasticsearch_etc_default_data_dir: "{{ elasticsearch_folders.data }}"
-elasticsearch_etc_default_work_dir: "{{ elasticsearch_folders.work }}"
-elasticsearch_etc_default_conf_dir: "{{ elasticsearch_folders.conf }}"
-elasticsearch_etc_default_conf_file: "{{ elasticsearch_folders.conf ~ '/elasticsearch.yml' }}"
-elasticsearch_etc_default_java_opts: []
-elasticsearch_etc_default_restart_on_upgrade: 'true'
+elasticsearch_java_home: ''
+elasticsearch_java_opts: []
+elasticsearch_limit_nproc: 2048
+elasticsearch_max_open_files: 65536
+elasticsearch_max_locked_memory: 'unlimited'
+elasticsearch_max_map_count: 262144
+elasticsearch_restart_on_upgrade: 'true'
+elasticsearch_startup_sleep_time: 5
 
 
 # Main configuration file
 #------------------------
 
-# Cluster
-elasticsearch_cluster_name: 'elasticsearch'
+elasticsearch_config_base: "{{ _elasticsearch_config_base }}"
+elasticsearch_config_xpack: "{{ _elasticsearch_config_xpack }}"
+elasticsearch_manage_xpack: False
 
-# Node
-elasticsearch_node_name: "{{ ansible_hostname }}"
-elasticsearch_custom_var: {}
-
-# Paths
-elasticsearch_path_data: "{{ elasticsearch_etc_default_data_dir }}"
-elasticsearch_path_logs: "{{ elasticsearch_etc_default_log_dir }}"
-
-# Memory
-elasticsearch_bootstrap_mlockall: 'true'
-
-# Network
-elasticsearch_network_host: '127.0.0.1'
-elasticsearch_http_port: 9200
-
-# Discovery
-elasticsearch_discovery_zen_minimum_master_nodes: 1
-elasticsearch_discovery_zen_ping_unicast_hosts: []
-
-# Gateway
-elasticsearch_gateway_recover_after_nodes: 1
-
-# Various
-elasticsearch_various_node_max_local_storage_nodes: 1
-elasticsearch_various_action_destructive_requires_name: 'true'
-
-
-# Logging configuration file
-#---------------------------
-
-elasticsearch_logging:
-  es.logger.level: INFO
-  rootLogger: ${es.logger.level}, console, file
-  logger:
-    action: DEBUG
-    deprecation: INFO, deprecation_log_file
-    com.amazonaws: WARN
-    com.amazonaws.jmx.SdkMBeanRegistrySupport: ERROR
-    com.amazonaws.metrics.AwsSdkMetrics: ERROR
-    org.apache.http: INFO
-    index.search.slowlog: TRACE, index_search_slow_log_file
-    index.indexing.slowlog: TRACE, index_indexing_slow_log_file
-
-  additivity:
-    index.search.slowlog: false
-    index.indexing.slowlog: false
-    deprecation: false
-
-  appender:
-    console:
-      type: console
-      layout:
-        type: consolePattern
-        conversionPattern: "[%d{ISO8601}][%-5p][%-25c] %m%n"
-
-    file:
-      type: file
-      file: ${path.logs}/${cluster.name}.log
-      layout:
-        type: pattern
-        conversionPattern: "[%d{ISO8601}][%-5p][%-25c] %.10000m%n"
-
-    deprecation_log_file:
-      type: file
-      file: ${path.logs}/${cluster.name}_deprecation.log
-      layout:
-        type: pattern
-        conversionPattern: "[%d{ISO8601}][%-5p][%-25c] %m%n"
-
-    index_search_slow_log_file:
-      type: file
-      file: ${path.logs}/${cluster.name}_index_search_slowlog.log
-      layout:
-        type: pattern
-        conversionPattern: "[%d{ISO8601}][%-5p][%-25c] %m%n"
-
-    index_indexing_slow_log_file:
-      type: file
-      file: ${path.logs}/${cluster.name}_index_indexing_slowlog.log
-      layout:
-        type: pattern
-        conversionPattern: "[%d{ISO8601}][%-5p][%-25c] %m%n"
+_elasticsearch_config_base:
+  cluster:
+    name: 'es-cluster01'
+  http:
+    port: 9200
+  network:
+    host: '127.0.0.1'
+  node:
+    max_local_storage_nodes: 1
+    name: "{{ ansible_hostname }}"
+  path:
+    conf: "{{ elasticsearch_etc_dir_path }}"
+    data: "{{ elasticsearch_data_dir_path }}"
+    logs: "{{ elasticsearch_log_dir_path }}"
+_elasticsearch_config_xpack:
+  xpack:
+    monitoring:
+      enabled: False
+    security:
+      enabled: False
+    watcher:
+      enabled: False
 
 
 # Logrotate settings

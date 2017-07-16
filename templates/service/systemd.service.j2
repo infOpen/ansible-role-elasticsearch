@@ -1,0 +1,59 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description=Elasticsearch
+Documentation=http://www.elastic.co
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Environment=ES_HOME={{ elasticsearch_home_dir_path }}
+Environment=CONF_DIR={{ elasticsearch_etc_dir_path }}
+Environment=DATA_DIR={{ elasticsearch_data_dir_path }}
+Environment=LOG_DIR={{ elasticsearch_log_dir_path }}
+Environment=PID_DIR={{ elasticsearch_pid_dir_path }}
+EnvironmentFile=-/etc/default/elasticsearch
+
+WorkingDirectory=/usr/share/elasticsearch
+
+User={{ elasticsearch_user_name }}
+Group={{ elasticsearch_group_name }}
+
+ExecStartPre=/usr/share/elasticsearch/bin/elasticsearch-systemd-pre-exec
+
+ExecStart=/usr/share/elasticsearch/bin/elasticsearch \
+                                                -p ${PID_DIR}/elasticsearch.pid \
+                                                --quiet \
+                                                -Edefault.path.logs=${LOG_DIR} \
+                                                -Edefault.path.data=${DATA_DIR} \
+                                                -Edefault.path.conf=${CONF_DIR}
+
+# StandardOutput is configured to redirect to journalctl since
+# some error messages may be logged in standard output before
+# elasticsearch logging system is initialized. Elasticsearch
+# stores its logs in /var/log/elasticsearch and does not use
+# journalctl by default. If you also want to enable journalctl
+# logging, you can simply remove the "quiet" option from ExecStart.
+StandardOutput=journal
+StandardError=inherit
+
+# Specifies the maximum file descriptor number that can be opened by this process
+LimitNOFILE={{ elasticsearch_max_open_files }}
+
+# Specifies the maximum number of processes
+LimitNPROC={{ elasticsearch_limit_nproc }}
+
+# Disable timeout logic and wait until process is stopped
+TimeoutStopSec=0
+
+# SIGTERM signal is used to stop the Java process
+KillSignal=SIGTERM
+
+# Java process is never killed
+SendSIGKILL=no
+
+# When a JVM receives a SIGTERM signal it exits with code 143
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target

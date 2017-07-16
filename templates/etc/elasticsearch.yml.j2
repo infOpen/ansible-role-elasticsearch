@@ -1,0 +1,7 @@
+#{{ ansible_managed }}
+
+{% if elasticsearch_manage_xpack %}
+{{ elasticsearch_config_base | combine(elasticsearch_config_xpack) | to_nice_yaml }}
+{% else %}
+{{ elasticsearch_config_base | to_nice_yaml }}
+{% endif %}

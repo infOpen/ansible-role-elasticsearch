@@ -2,9 +2,13 @@
 
 # Handlers main file for elasticsearch role
 
-- name: 'restart elasticsearch'
+- name: 'HANDLER | Restart elasticsearch'
   become: True
   service:
     name: "{{ elasticsearch_service_name }}"
     state: 'restarted'
-  when: "{{ elasticsearch_service_state != 'stopped' }}"
+  when: "elasticsearch_service_state != 'stopped'"
+  tags:
+    - 'role::elasticsearch'
+    - 'role::elasticsearch::config'
+    - 'role::elasticsearch::install'

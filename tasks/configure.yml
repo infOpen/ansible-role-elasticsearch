@@ -1,138 +1,51 @@
 ---
 
-- name: 'Manage configuration directories'
-  become: True
+- name: 'CONFIG | Manage directories permissions'
   file:
-    path: "{{ elasticsearch_etc_default_conf_dir }}"
-    state: 'directory'
-    owner: "{{ elasticsearch_etc_folders_owner }}"
-    group: "{{ elasticsearch_etc_folders_group }}"
-    mode: "{{ elasticsearch_etc_folders_mode }}"
-  notify:
-    - 'restart elasticsearch'
+    path: "{{ item.path }}"
+    state: "{{ item.state }}"
+    owner: "{{ item.owner | default(elasticsearch_user_name) }}"
+    group: "{{ item.group | default(elasticsearch_group_name) }}"
+    mode: "{{ item.mode }}"
+  notify: 'HANDLER | Restart elasticsearch'
+  with_items: "{{ elasticsearch_dirs_paths }}"
 
 
-- name: 'Manage data directories'
-  become: True
-  file:
-    path: "{{ item }}"
-    state: 'directory'
-    owner: "{{ elasticsearch_data_folders_owner }}"
-    group: "{{ elasticsearch_data_folders_group }}"
-    mode: "{{ elasticsearch_data_folders_mode }}"
-  with_items: "{{ elasticsearch_etc_default_data_dir }}"
-  notify:
-    - 'restart elasticsearch'
-
-
-- name: 'Manage log directories'
-  become: True
-  file:
-    path: "{{ elasticsearch_etc_default_log_dir }}"
-    state: 'directory'
-    owner: "{{ elasticsearch_log_folders_owner }}"
-    group: "{{ elasticsearch_log_folders_group }}"
-    mode: "{{ elasticsearch_log_folders_mode }}"
-  notify:
-    - 'restart elasticsearch'
-
-
-- name: 'Generate main config file'
-  become: True
+- name: 'CONFIG | Generate main config file'
   template:
-    src: "{{ role_path }}/templates/etc/elasticsearch/elasticsearch.yml.j2"
-    dest: "{{ elasticsearch_etc_default_conf_file }}"
-    group: "{{ elasticsearch_etc_files_group }}"
-    owner: "{{ elasticsearch_etc_files_owner }}"
-    mode: "{{ elasticsearch_etc_files_mode }}"
-  notify:
-    - 'restart elasticsearch'
+    src: "{{ role_path }}/templates/etc/elasticsearch.yml.j2"
+    dest: "{{ elasticsearch_etc_dir_path }}/elasticsearch.yml"
+    group: "{{ elasticsearch_user_name }}"
+    owner: "{{ elasticsearch_group_name }}"
+    mode: "{{ elasticsearch_config_files_mode }}"
+  notify: 'HANDLER | Restart elasticsearch'
 
 
-- name: 'Generate logging config file'
-  become: True
+- name: 'CONFIG | Generate default config file'
   template:
-    src: "{{ role_path }}/templates/etc/elasticsearch/logging.yml.j2"
-    dest: "{{ elasticsearch_etc_default_conf_dir ~ '/logging.yml' }}"
-    group: "{{ elasticsearch_etc_files_group }}"
-    owner: "{{ elasticsearch_etc_files_owner }}"
-    mode: "{{ elasticsearch_etc_files_mode }}"
-  notify:
-    - 'restart elasticsearch'
-
-
-- name: 'Generate default config file'
-  become: True
-  template:
-    src: "{{ role_path }}/templates/etc/default/elasticsearch.j2"
+    src: "{{ role_path }}/templates/etc/default.j2"
     dest: '/etc/default/elasticsearch'
-    group: "{{ elasticsearch_etc_files_group }}"
-    owner: "{{ elasticsearch_etc_files_owner }}"
-    mode: "{{ elasticsearch_etc_files_mode }}"
-  notify:
-    - 'restart elasticsearch'
+    group: "{{ elasticsearch_user_name }}"
+    owner: "{{ elasticsearch_group_name }}"
+    mode: "{{ elasticsearch_config_files_mode }}"
+  notify: 'HANDLER | Restart elasticsearch'
 
 
-- name: 'Generate logrotate config file'
-  become: True
+- name: 'CONFIG | Generate logrotate config file'
   template:
-    src: "{{ role_path }}/templates/etc/logrotate.d/elasticsearch.j2"
-    dest: '/etc/logrotate.d/elasticsearch'
+    src: "{{ role_path }}/templates/etc/logrotate.j2"
+    dest: "{{ elasticsearch_logrotate_dir_path }}/elasticsearch"
     group: 'root'
     owner: 'root'
-    mode: "{{ elasticsearch_etc_files_mode }}"
-  notify:
-    - 'restart elasticsearch'
+    mode: "{{ elasticsearch_config_files_mode }}"
+  notify: 'HANDLER | Restart elasticsearch'
 
 
-- name: 'Update elasticsearch limits'
-  become: True
+- name: 'CONFIG | LIMITS | Update elasticsearch limits'
   template:
-    src: "{{ role_path }}/templates/etc/security/limits.d/elasticsearch.conf.j2"
-    dest: '/etc/security/limits.d/elasticsearch.conf'
-    group: "{{ elasticsearch_etc_files_group }}"
-    owner: "{{ elasticsearch_etc_files_owner }}"
-    mode: "{{ elasticsearch_etc_files_mode }}"
-  notify:
-    - 'restart elasticsearch'
-
-
-- name: 'Ensure systemd target folder exists'
-  become: True
-  file:
-    dest: '/usr/lib/systemd/system'
-    state: 'directory'
-  notify:
-    - 'restart elasticsearch'
-  when: "{{ (ansible_distribution_release | lower) == 'xenial' }}"
-
-
-- name: 'Generate systemd service file'
-  become: True
-  template:
-    src: "{{ role_path }}/templates/usr/lib/systemd/system/elasticsearch.service.j2"
-    dest: '/usr/lib/systemd/system/elasticsearch.service'
-    group: "{{ elasticsearch_etc_files_group }}"
-    owner: "{{ elasticsearch_etc_files_owner }}"
-    mode: "{{ elasticsearch_etc_files_mode }}"
-  register: 'elasticsearch_systemd_config'
-  notify:
-    - 'restart elasticsearch'
-  when: "{{ (ansible_distribution_release | lower) == 'xenial' }}"
-
-
-- name: 'Reload systemd configuration'
-  become: True
-  command: '/bin/systemctl daemon-reload'
-  when:
-    - "{{ elasticsearch_systemd_config | changed }}"
-    - "{{ (ansible_distribution_release | lower) == 'xenial' }}"
-
-
-- name: 'Enable elasticsearch service on boot'
-  become: True
-  service:
-    name: "{{ elasticsearch_service_name }}"
-    enabled: "{{ elasticsearch_service_enabled }}"
-    state: "{{ elasticsearch_service_state }}"
-  failed_when: False
+    src: "{{ role_path }}/templates/etc/limits.conf.j2"
+    dest: "{{ elasticsearch_limits_dir_path }}/elasticsearch.conf"
+    group: "{{ elasticsearch_user_name }}"
+    owner: "{{ elasticsearch_group_name }}"
+    mode: "{{ elasticsearch_config_files_mode }}"
+  notify: 'HANDLER | Restart elasticsearch'
